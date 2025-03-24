@@ -4,10 +4,8 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 void main() async {
-  // Load the .env file
   await dotenv.load(fileName: ".env");
 
-  // Check if the API key is set
   final apiKey = dotenv.env['OPENWEATHERMAP_API_KEY'];
   if (apiKey == null || apiKey.isEmpty) {
     print('Error: OPENWEATHERMAP_API_KEY is not set in the .env file.');
@@ -35,14 +33,13 @@ class WeatherScreen extends StatefulWidget {
 }
 
 class _WeatherScreenState extends State<WeatherScreen> {
-  late String apiKey; // Replace with your OpenWeatherMap API key
+  late String apiKey;
   final String geocodingUrl = 'http://api.openweathermap.org/geo/1.0/direct';
   final String weatherUrl = 'https://api.openweathermap.org/data/2.5/weather';
-  String cityName = 'London'; // Default city
+  String cityName = 'London';
   Map<String, dynamic>? weatherData;
   String errorMessage = '';
 
-  // List of major cities for the dropdown
   final List<String> cities = [
     'London',
     'Paris',
@@ -58,7 +55,6 @@ class _WeatherScreenState extends State<WeatherScreen> {
 
   Future<void> fetchWeather() async {
     try {
-      // Step 1: Get latitude and longitude using Geocoding API
       final geocodingResponse = await http.get(
         Uri.parse('$geocodingUrl?q=$cityName&limit=1&appid=$apiKey'),
       );
@@ -83,7 +79,6 @@ class _WeatherScreenState extends State<WeatherScreen> {
       final double lat = geocodingData[0]['lat'];
       final double lon = geocodingData[0]['lon'];
 
-      // Step 2: Fetch weather data using Weather API (v2.5)
       final weatherResponse = await http.get(
         Uri.parse('$weatherUrl?lat=$lat&lon=$lon&units=metric&appid=$apiKey'),
       );
@@ -110,7 +105,7 @@ class _WeatherScreenState extends State<WeatherScreen> {
   @override
   void initState() {
     super.initState();
-    apiKey = dotenv.env['OPENWEATHERMAP_API_KEY'] ?? ''; // Load API key
+    apiKey = dotenv.env['OPENWEATHERMAP_API_KEY'] ?? '';
     if (apiKey.isEmpty) {
       setState(() {
         errorMessage = 'API key is not set. Please check the .env file.';
@@ -132,7 +127,6 @@ class _WeatherScreenState extends State<WeatherScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              // Dropdown for city selection
               DropdownButton<String>(
                 value: cityName,
                 onChanged: (String? newValue) {
